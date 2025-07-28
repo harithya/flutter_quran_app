@@ -3,6 +3,7 @@ import 'package:alquran/shared/theme.dart';
 import 'package:alquran/ui/widgets/alquran_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class SurahDetailPage extends StatelessWidget {
   final String nama;
@@ -28,13 +29,74 @@ class SurahDetailBody extends StatefulWidget {
 }
 
 class _SurahDetailBodyState extends State<SurahDetailBody> {
+  late AudioPlayer player = AudioPlayer();
+  int? ayatPlayAudio;
+  bool isPlay = false;
+
   @override
   void initState() {
     super.initState();
+    player = AudioPlayer();
+    player.setReleaseMode(ReleaseMode.stop);
+    player.onPlayerComplete.listen(_handleOnPlayerComplete);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SurahProvider>().getSurahDetail(widget.nomor);
       context.read<SurahProvider>().getTafsir(widget.nomor);
     });
+  }
+
+  void _handleOnPlayerComplete(event) {
+    if (!mounted) return;
+    final surahProvider = Provider.of<SurahProvider>(context, listen: false);
+    final ayat = surahProvider.surahDetail?.ayat;
+
+    try {
+      final findNextAyat = ayat?.firstWhere(
+        (element) => element.nomorAyat == (ayatPlayAudio ?? 1) + 1,
+      );
+      if (findNextAyat != null) {
+        _playAudio(findNextAyat.audio['01']!, findNextAyat.nomorAyat);
+      } else {
+        setState(() {
+          isPlay = false;
+          ayatPlayAudio = null;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Tidak ada ayat selanjutnya")));
+    }
+  }
+
+  @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _playAudio(String audio, int ayat) async {
+    if (isPlay && ayat == ayatPlayAudio) {
+      player.stop();
+      setState(() {
+        isPlay = false;
+        ayatPlayAudio = null;
+      });
+    } else if (isPlay && ayatPlayAudio != ayat) {
+      await player.stop();
+      await player.play(UrlSource(audio));
+      setState(() {
+        isPlay = true;
+        ayatPlayAudio = ayat;
+      });
+    } else {
+      await player.play(UrlSource(audio));
+      setState(() {
+        isPlay = true;
+        ayatPlayAudio = ayat;
+      });
+    }
   }
 
   void _showTafsir(int ayat) {
@@ -94,6 +156,13 @@ class _SurahDetailBodyState extends State<SurahDetailBody> {
                   ayat: surahDetail.ayat[index],
                   color: index % 2 == 0 ? Colors.grey.shade100 : Colors.white,
                   onTap: () => _showTafsir(surahDetail.ayat[index].nomorAyat),
+                  isPlay:
+                      isPlay &&
+                      ayatPlayAudio == surahDetail.ayat[index].nomorAyat,
+                  onPlay: () => _playAudio(
+                    surahDetail.ayat[index].audio['01']!,
+                    surahDetail.ayat[index].nomorAyat,
+                  ),
                 );
               },
             );

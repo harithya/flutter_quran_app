@@ -76,12 +76,16 @@ class SurahDetailItem extends StatelessWidget {
   final Ayat ayat;
   final Color color;
   final void Function()? onTap;
+  final void Function()? onPlay;
+  final bool isPlay;
 
   const SurahDetailItem({
     super.key,
     required this.ayat,
     required this.color,
     this.onTap,
+    this.onPlay,
+    this.isPlay = false,
   });
 
   @override
@@ -125,6 +129,7 @@ class SurahDetailItem extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Text(
@@ -147,8 +152,11 @@ class SurahDetailItem extends StatelessWidget {
                     ),
                   ),
                   iconSize: 20,
-                  onPressed: () {},
-                  icon: Icon(Icons.play_arrow, color: primaryColor),
+                  onPressed: onPlay,
+                  icon: Icon(
+                    isPlay ? Icons.pause : Icons.play_arrow,
+                    color: primaryColor,
+                  ),
                 ),
               ],
             ),
