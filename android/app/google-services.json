@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56539368933",
+    "project_id": "flutter-al-quran",
+    "storage_bucket": "flutter-al-quran.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56539368933:android:3a4ffac68265c653fdf30c",
+        "android_client_info": {
+          "package_name": "com.harithya.alquran"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUxU15tHlw21NfBMDMpwuQYkQkIgGrAX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
