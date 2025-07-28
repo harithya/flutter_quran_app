@@ -41,4 +41,4 @@ jobs:
         with:
           artifacts: "build/app/outputs/flutter-apk/app-profile.apk"
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v.0.${GITHUB_RUN_NUMBER}
+          tag: v0.0.${{ github.run_number }}

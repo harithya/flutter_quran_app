@@ -1,4 +1,4 @@
-package com.example.alquran
+package com.harithya.alquran
 
 import io.flutter.embedding.android.FlutterActivity
 
